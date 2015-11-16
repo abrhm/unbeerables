@@ -1,0 +1,131 @@
+single simple SVM: 64 word, basic SVM, random 0.3 partition, 4 class, gray images
+'PointSelection' = 'Detector'
+
+#1:
+
+                       PREDICTED
+KNOWN       | guinness   stella   tuborg   
+-------------------------------------------
+guinness    | 0.80       0.10     0.10     
+stella      | 0.00       0.90     0.10     
+tuborg      | 0.00       0.10     0.90     
+
+* Average Accuracy is 0.87.
+
+#2:
+
+                       PREDICTED
+KNOWN       | guinness   stella   tuborg   
+-------------------------------------------
+guinness    | 0.90       0.00     0.10     
+stella      | 0.00       0.60     0.40     
+tuborg      | 0.10       0.10     0.80     
+
+* Average Accuracy is 0.77.
+
+#3:
+
+                       PREDICTED
+KNOWN       | guinness   stella   tuborg   
+-------------------------------------------
+guinness    | 0.80       0.00     0.20     
+stella      | 0.00       0.80     0.20     
+tuborg      | 0.00       0.70     0.30     
+
+* Average Accuracy is 0.63.
+
+#4:
+
+                       PREDICTED
+KNOWN       | guinness   stella   tuborg   
+-------------------------------------------
+guinness    | 0.90       0.10     0.00     
+stella      | 0.00       1.00     0.00     
+tuborg      | 0.20       0.20     0.60     
+
+* Average Accuracy is 0.83.
+
+#5:
+
+                      PREDICTED
+KNOWN       | guinness   stella   tuborg   
+-------------------------------------------
+guinness    | 0.80       0.20     0.00     
+stella      | 0.00       0.70     0.30     
+tuborg      | 0.10       0.30     0.60     
+
+* Average Accuracy is 0.70.
+
+//-----------------------
+imgSetTrain contents: 
+    'guinness_14.jpg'
+
+    'guinness_20.jpg'
+
+    'guinness_17.JPG'
+
+    'guinness_15.jpg'
+
+    'guinness_1.jpg'
+
+    'guinness_11.jpg'
+
+                       PREDICTED
+KNOWN       | guinness   stella   tuborg   
+-------------------------------------------
+guinness    | 0.90       0.00     0.10     
+stella      | 0.00       0.40     0.60     
+tuborg      | 0.10       0.20     0.70     
+
+* Average Accuracy is 0.67.	
+
+//-----------------------
+imgSetTrain contents: 
+    'guinness_10.jpg'
+
+    'guinness_8.jpg'
+
+    'guinness_11.jpg'
+
+    'guinness_15.jpg'
+
+    'guinness_12.jpg'
+
+    'guinness_7.jpg'
+
+    'stella_8.jpg'
+
+    'stella_9.jpg'
+
+    'stella_6.jpg'
+
+    'stella_11.jpg'
+
+    'stella_7.jpg'
+
+    'stella_10.jpg'
+
+    'tuborg_14.jpg'
+
+    'tuborg_8.jpg'
+
+    'tuborg_6.jpg'
+
+    'tuborg_10.jpg'
+
+    'tuborg_12.jpg'
+
+    'tuborg_7.jpg'
+	
+	
+                       PREDICTED
+KNOWN       | guinness   stella   tuborg   
+-------------------------------------------
+guinness    | 0.90       0.00     0.10     
+stella      | 0.20       0.80     0.00     
+tuborg      | 0.40       0.10     0.50     
+
+* Average Accuracy is 0.73.
+//-----------------------
+
+
