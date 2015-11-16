@@ -21,7 +21,7 @@ if ~isa(featureExtractHandle, 'function_handle') || isempty(imgSetTrain)
 end
 
 if isempty(imgSetTrain)
-    main_folder = 'D:\debug\small';
+    main_folder = 'D:\matlab_proj\gray';
     imgSetTrain = imageSet(main_folder, 'recursive');
 end
 
@@ -29,17 +29,37 @@ if islogical(validify)
     if validify == true
         minSetCount = min([imgSetTrain.Count]);
         imgSetsPart = partition(imgSetTrain, minSetCount, 'randomize');
-        [imgSetTrain, validateSet] = partition(imgSetsPart, 0.3, 'randomize')
+        %imgSetsPart = partition(imgSetTrain, minSetCount, 'sequential');
+        [imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'randomize')
+        %[imgSetTrain, validateSet] = partition(imgSetTrain, 0.4, 'randomize')
+        %[imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'sequential')
     end
+end
+
+% Debug information
+% Milyen képekre tanul rá
+str = 'imgSetTrain contents: ';
+disp(str)
+dbg = [imgSetTrain.ImageLocation];
+dbg{:};
+s = size(dbg);
+for i=1:s(end)
+	a = dbg(i);
+	aa = regexp(a,'\','split');
+	aa1 = aa{:};
+	aa1 = aa1(end);
+    disp(aa1)
 end
 
 % 1. lépés:
 % Bag of visual words létrehozása, ami k-means klaszterezést használ
 % a megfelelõ szeparáláshoz; a klaszterek pedig az egyes visual word-öknek
-% felelnek meg, amibõl hisztogramot állítunk elõ és azt adjuk tovább
-% általunk létrehozott feature detektor function-tõl kapja az inputot.
+% felelnek meg, amibõl hisztogramot állítunk elõ és azt adjuk tovább.
+% A feature detektálás
+%   vagy a beépített SURF algoritmussal dolgozó eljárással,
+%   vagy általunk létrehozott feature detektor function-nal történik.
 if useSURF == true
-    bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', 200)
+    bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', 64, 'PointSelection', 'Detector')
 else
     bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle)
 end
@@ -49,8 +69,8 @@ end
 % az elõzõ lépésben kapott hisztogram egy vektor, amit átadunk az SVM
 % osztályozónak.
 % TODO: templateSVM-et be kell lõni
-% opts = templateSVM('BoxConstraint', 1.1, 'KernelFunction', 'gaussian');
-categoryClassifier = trainImageCategoryClassifier(imgSetTrain, bag); %, 'LearnerOptions', opts);
+opts = templateSVM('BoxConstraint', 1.3, 'KernelFunction', 'gaussian');
+categoryClassifier = trainImageCategoryClassifier(imgSetTrain, bag, 'LearnerOptions', opts);
 
 % képek törlése memóriából -> a jellemzõket kinyertük, képeket kiértékeltük
 % delete(trainingSets)
