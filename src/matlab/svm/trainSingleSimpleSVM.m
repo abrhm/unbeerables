@@ -1,7 +1,8 @@
 function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtractHandle, validify, wordNumber)
 % Tanító, amely a Bag of Visual Words modellt használja
-% képekbõl kinyert SIFT jellemzõk transzformálására
+% képekbõl kinyert jellemzõk transzformálására
 % olyan feature vektorrá, ami klasszifikálható SVM-el.
+%
 % input:
 %   imgSetTrain - képhalmaz, amikre be akarjuk tanítani az osztályozót
 %   featureExtractHandle - custom function handle, ami szolgáltatja
@@ -11,6 +12,10 @@ function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtract
 %       TESZTELÉS CÉLJÁBÓL)
 %   wordNumber - a szótárunkba felírandó szavak száma, és így a kalszterek
 %       száma, meghatározza a vizuális szavak számát (default: 64)
+%
+% output:
+%   categoryClassifier - betanított ECOC framework-el ellátott SVM
+%       osztályozó
 %
 % NOTE: Work in progress!
 % Folyamat, paraméterek, illetve megvalósítás részletessége változhat!
@@ -27,7 +32,7 @@ if isempty(imgSetTrain)
     imgSetTrain = imageSet(main_folder, 'recursive');
 end
 
-if isempty(wordNumber) || ~isnumeric(wordNumber)
+if isempty(wordNumber) || ~isnumeric(wordNumber) == 0
     wordNumber = 64;
 end
 
