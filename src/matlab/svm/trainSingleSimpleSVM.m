@@ -1,4 +1,4 @@
-function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtractHandle, validify)
+function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtractHandle, validify, wordNumber)
 % Tanító, amely a Bag of Visual Words modellt használja
 % képekbõl kinyert SIFT jellemzõk transzformálására
 % olyan feature vektorrá, ami klasszifikálható SVM-el.
@@ -9,6 +9,8 @@ function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtract
 %   validify - akarunk-e kiértékelni train halmazon?
 %       (magával vonja az eredeti halmaz felosztását és értékelését -
 %       TESZTELÉS CÉLJÁBÓL)
+%   wordNumber - a szótárunkba felírandó szavak száma, és így a kalszterek
+%       száma, meghatározza a vizuális szavak számát (default: 64)
 %
 % NOTE: Work in progress!
 % Folyamat, paraméterek, illetve megvalósítás részletessége változhat!
@@ -25,14 +27,18 @@ if isempty(imgSetTrain)
     imgSetTrain = imageSet(main_folder, 'recursive');
 end
 
+if isempty(wordNumber) || ~isnumeric(wordNumber)
+    wordNumber = 64;
+end
+
 if islogical(validify)
     if validify == true
         minSetCount = min([imgSetTrain.Count]);
         imgSetsPart = partition(imgSetTrain, minSetCount, 'randomize');
         %imgSetsPart = partition(imgSetTrain, minSetCount, 'sequential');
-        [imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'randomize')
-        %[imgSetTrain, validateSet] = partition(imgSetTrain, 0.4, 'randomize')
-        %[imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'sequential')
+        [imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'randomize');
+        %[imgSetTrain, validateSet] = partition(imgSetTrain, 0.4, 'randomize');
+        %[imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'sequential');
     end
 end
 
@@ -59,7 +65,7 @@ end
 %   vagy a beépített SURF algoritmussal dolgozó eljárással,
 %   vagy általunk létrehozott feature detektor function-nal történik.
 if useSURF == true
-    bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', 64, 'PointSelection', 'Detector')
+    bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', wordNumber, 'PointSelection', 'Detector')
 else
     bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle)
 end

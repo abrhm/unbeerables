@@ -1,4 +1,4 @@
-function [] = classifySingleSimpleSVM(img, classifier)
+function [return_label, return_score] = classifySingleSimpleSVM(img, classifier)
 % Kiértékelõ fgv., amely egy tanító osztályzóval klasszifikál input képet
 % input:
 %   img - kép, amire predikciót akarunk mondani:
@@ -16,15 +16,17 @@ end
     
 if isobject(classifier)
     [labelIdx, score] = predict(classifier, img);
-    classifier.Labels(labelIdx)
+    return_label = classifier.Labels(labelIdx);
+    return_score = score;
     
 elseif ischar(classifier) == 1
     load(classifier, 'categoryClassifier');
     
     [labelIdx, score] = predict(categoryClassifier, img);
-    categoryClassifier.Labels(labelIdx)
-    
+    return_label = categoryClassifier.Labels(labelIdx);
+    return_score = score;
 else
     error('Parameter classifier is not valid!')
+end
     
 end
