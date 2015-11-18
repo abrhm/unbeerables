@@ -1,0 +1,85 @@
+simple SVM: 64 words, multiclass SVM, random 0.4 partition, 4 classes (red tuborg, heineken, stella, guinness), gray images
+'PointSelection' = 'Detector', 'BoxConstraint', 1.3
+
+//-----------------------
+
+#1:
+
+imgSetTrain contents: 
+    'guinness_2.jpg' 'guinness_14.jpg' 'guinness_15.jpg' 'guinness_10.jpg' 'guinness_8.jpg' 'guinness_16.jpg'
+
+    'heineken_10.jpg' 'heineken_5.jpg' 'heineken_11.jpg' 'heineken_logo.jpg' 'heineken_9.jpg' 'heineken_8.jpg'
+
+    'stella_2.jpg' 'stella_11.jpg' 'stella_13.jpg' 'stella_9.jpg' 'stella_17.jpg' 'stella_8.jpg'
+
+    'tuborg_8.jpg' 'tuborg_9.jpg' 'tuborg_2.jpg' 'tuborg_logo.jpg' 'tuborg_12.jpg' 'tuborg_14.jpg'
+
+                             PREDICTED
+KNOWN       | guinness   heineken   stella   tuborg   
+------------------------------------------------------
+guinness    | 0.80       0.20       0.00     0.00     
+heineken    | 0.20       0.60       0.00     0.20     
+stella      | 0.00       0.20       0.30     0.50     
+tuborg      | 0.40       0.20       0.00     0.40     
+
+* Average Accuracy is 0.53.
+
+//-----------------------
+
+5 classes (red tuborg, heineken, stella, guinness, kobanyai)
+
+//-----------------------
+
+#2:
+
+imgSetTrain contents: 
+    'guinness_8.jpg' 'guinness_15.jpg' 'guinness_20.jpg' 'guinness_17.JPG' 'guinness_10.jpg' 'guinness_3.jpg'
+	
+	'heineken_15.jpg' 'heineken_19.jpg' 'heineken_5.jpg' 'heineken_3.JPG' 'heineken_4.jpg' 'heineken_logo.jpg'
+
+    'kobanyai_8.jpg' 'kobanyai_logo.jpg' 'kobanyai_12.jpg' 'kobanyai_2.jpg' 'kobanyai_7.JPG' 'kobanyai_1.jpg'
+	
+	'stella_2.jpg' 'stella_12.jpg' 'stella_4.jpg' 'stella_18.jpg' 'stella_8.jpg' 'stella_11.jpg'
+
+    'tuborg_8.jpg' 'tuborg_6.jpg' 'tuborg_10.jpg' 'tuborg_logo3.jpg' 'tuborg_12.jpg' 'tuborg_2.jpg'
+
+                                  PREDICTED
+KNOWN       | guinness   heineken   kobanyai   stella   tuborg   
+-----------------------------------------------------------------
+guinness    | 0.90       0.00       0.00       0.10     0.00     
+heineken    | 0.00       0.50       0.10       0.20     0.20     
+kobanyai    | 0.30       0.10       0.30       0.10     0.20     
+stella      | 0.00       0.00       0.10       0.30     0.60     
+tuborg      | 0.10       0.00       0.40       0.20     0.30     
+
+* Average Accuracy is 0.46.
+
+//-----------------------
+
+#3:
+
+imgSetTrain contents: 
+    'guinness_8.jpg' 'guinness_11.jpg' 'guinness_15.jpg' 'guinness_3.jpg' 'guinness_12.jpg' 'guinness_logo2.jpg'
+
+    'heineken_9.jpg' 'heineken_16.jpg' 'heineken_2.jpg' 'heineken_7.jpg' 'heineken_19.jpg' 'heineken_14.jpg'
+
+    'kobanyai_11.jpg' 'kobanyai_logo.jpg' 'kobanyai_9.jpg' 'kobanyai_8.jpg' 'kobanyai_logo2.jpg' 'kobanyai_13.jpg'
+
+    'stella_12.jpg' 'stella_10.jpg' 'stella_15.jpg' 'stella_2.jpg' 'stella_13.jpg' 'stella_8.jpg'
+
+    'tuborg_1.jpg' 'tuborg_logo3.jpg' 'tuborg_logo.jpg' 'tuborg_logo2.jpg' 'tuborg_11.jpg' 'tuborg_14.jpg'
+
+
+                                  PREDICTED
+KNOWN       | guinness   heineken   kobanyai   stella   tuborg   
+-----------------------------------------------------------------
+guinness    | 0.90       0.10       0.00       0.00     0.00     
+heineken    | 0.20       0.40       0.00       0.40     0.00     
+kobanyai    | 0.00       0.50       0.00       0.20     0.30     
+stella      | 0.00       0.20       0.00       0.70     0.10     
+tuborg      | 0.10       0.20       0.00       0.10     0.60     
+
+* Average Accuracy is 0.52.
+
+//-----------------------
+
