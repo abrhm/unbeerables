@@ -1,9 +1,14 @@
-function [return_label, return_score] = classifySingleSimpleSVM(img, classifier)
+function [return_label, return_score] = classifyECOCSVM(img, bagOfWords, classifier)
 %% Kiértékelõ fgv., amely egy tanító osztályzóval klasszifikál input képet
 % 
 % input:
 %   img - kép, amire predikciót akarunk mondani:
 %       img egy ImgSet objektum, vagy egy string (file + path)
+%       (lehetséges több képet is megadni ebben a változóban, de az nincs
+%        lekezelve)
+%   bagOfWords - létrehozott bag of visual words objektum, amit a tanítóban
+%       hoztunk létre; itt azért szükséges, mert azzal tudjuk elõállítani
+%       a kapott képrõl a hisztogram-jellemzõ vektort
 %   classifier - a tanító fgv. által létrehozott osztályozó objektum
 %       vagy egy elmentett osztályozó betöltésére szolgáló string (file+path)
 %
@@ -16,27 +21,29 @@ function [return_label, return_score] = classifySingleSimpleSVM(img, classifier)
 %
 
 if ischar(img) == 1
-    img = imread(fullfile(img));
+    testImgSet = imageSet(img);
+    img = read(testImgSet(1), 1);
+else
+    img = read(img(1), 1);
 end
 
-%% Az osztályozó visszaad egy score vektort, amiben a veszteségek vannak.
-% Ezekbõl a legnagyobbhoz tartozó osztály címkéjét fogja hozzárendelni
-% a képhez.
-% A veszteség ún. negált bináris veszteség, amit egy veszteségfgv-el
-% számít ki az osztályozó.
+if isa(bagOfWords, 'bagOfFeatures')
+    featureVector = encode(bagOfWords, img);
+end
+
 if isobject(classifier)
-    [labelIdx, score] = predict(classifier, img);
-    return_label = classifier.Labels(labelIdx);
+    [labelIdx, score] = predict(classifier, featureVector);
+    return_label = labelIdx;
     return_score = max(score);
     
 elseif ischar(classifier) == 1
     load(classifier, 'categoryClassifier');
     
-    [labelIdx, score] = predict(categoryClassifier, img);
-    return_label = categoryClassifier.Labels(labelIdx);
+    [labelIdx, score] = predict(categoryClassifier, featureVector);
+    return_label = labelIdx;
     return_score = max(score);
 else
     error('Parameter classifier is not valid!')
 end
-    
+
 end
