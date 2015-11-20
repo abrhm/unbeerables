@@ -112,6 +112,11 @@ if validify == true
     % osztályozásokra
     oosLoss = kfoldLoss(CVcategoryClassifier);
     disp(oosLoss)
+    
+    % confusion matrix reprezentáció
+    oofLoss = kfoldPredict(CVcategoryClassifier);
+    confMat = confusionmat(out_label_vector, oofLoss);
+    disp(confMat)
 end
 
 % Szükséges a predikálásnál
