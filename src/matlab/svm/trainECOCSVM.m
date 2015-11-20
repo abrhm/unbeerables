@@ -88,7 +88,7 @@ if useSURF == true
     bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
     disp(bag)
 else
-    bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle, 'StrongestFeatures', strongestFeatures);
+    bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
     disp(bag)
 end
 
