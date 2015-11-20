@@ -1,4 +1,4 @@
-function [categoryClassifier, output_bag] = trainECOCSVM(imgSetTrain, featureExtractHandle, validify, wordNumber)
+function [categoryClassifier, output_bag] = trainECOCSVM(imgSetTrain, featureExtractHandle, validify, wordNumber, strongestFeatures)
 %% Tanító, amely a Bag of Visual Words modellt használja
 % képekbõl kinyert SIFT jellemzõk transzformálására
 % olyan feature vektorrá, ami klasszifikálható SVM-el.
@@ -17,6 +17,8 @@ function [categoryClassifier, output_bag] = trainECOCSVM(imgSetTrain, featureExt
 %   validify - akarunk-e kiértékelni train halmazon?
 %       (magával vonja az eredeti halmaz felosztását és értékelését -
 %       TESZTELÉS CÉLJÁBÓL)
+%   strongestFeatures - a bag of visual words objektum a kinyert legerõsebb
+%       jellemzõk mekkora hányadát használja fel
 %
 % output:
 %   categoryClassifier - betanított SVM osztályozók egy ECOC
@@ -41,6 +43,16 @@ end
 
 if isempty(wordNumber) || ~isnumeric(wordNumber) == 0
     wordNumber = 64;
+end
+
+if isreal(strongestFeatures)
+    if strongestFeatures < 0
+       strongestFeatures = 0;
+    elseif strongestFeatures > 1
+       strongestFeatures = 1;
+    end
+else
+    error('strongestFeatures should be a float parameter!');
 end
 
 if islogical(validify)
@@ -73,9 +85,11 @@ end
 % felelnek meg, amibõl hisztogramot állítunk elõ és azt adjuk tovább
 % általunk létrehozott feature detektor function-tõl kapja az inputot.
 if useSURF == true
-    bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', wordNumber, 'PointSelection', 'Detector')
+    bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
+    disp(bag)
 else
-    bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle)
+    bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle, 'StrongestFeatures', strongestFeatures);
+    disp(bag)
 end
 
 %% 2. lépés: (train)
@@ -91,12 +105,13 @@ categoryClassifier = fitcecoc(featureMatrix,out_label_vector,'Learners',opts);
 
 %% Debug information
 % Információ kiírása a klasszifikálóról
-categoryClassifier.ClassNames
+%categoryClassifier.ClassNames
+
 % 3 bináris tanuló SVM-ek reprezentálása mátrix alakban aszerint, hogy
 % melyik a pozitív osztály, és melyik a negatív (sorok: osztályok,
 % oszlopok: bináris tanulók/SVM-ek)
 CodingMtx = categoryClassifier.CodingMatrix;
-disp(CodingMtx)
+%disp(CodingMtx)
 
 if validify == true
     % veszteség számítása

@@ -1,4 +1,4 @@
-function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtractHandle, validify, wordNumber)
+function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtractHandle, validify, wordNumber, strongestFeatures)
 %% Tanító, amely a Bag of Visual Words modellt használja
 % képekbõl kinyert jellemzõk transzformálására
 % olyan feature vektorrá, ami klasszifikálható SVM-el.
@@ -12,6 +12,8 @@ function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtract
 %       TESZTELÉS CÉLJÁBÓL)
 %   wordNumber - a szótárunkba felírandó szavak száma, és így a kalszterek
 %       száma, meghatározza a vizuális szavak számát (default: 64)
+%   strongestFeatures - a bag of visual words objektum a kinyert legerõsebb
+%       jellemzõk mekkora hányadát használja fel
 %
 % output:
 %   categoryClassifier - betanított ECOC framework-el ellátott SVM
@@ -34,6 +36,16 @@ end
 
 if isempty(wordNumber) || ~isnumeric(wordNumber) == 0
     wordNumber = 64;
+end
+
+if isreal(strongestFeatures)
+    if strongestFeatures < 0
+       strongestFeatures = 0;
+    elseif strongestFeatures > 1
+       strongestFeatures = 1;
+    end
+else
+    error('strongestFeatures should be a float parameter!');
 end
 
 if islogical(validify)
@@ -77,9 +89,11 @@ end
 %   vagy a beépített SURF algoritmussal dolgozó eljárással,
 %   vagy általunk létrehozott feature detektor function-nal történik.
 if useSURF == true
-    bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', wordNumber, 'PointSelection', 'Detector')
+    bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
+    disp(bag)
 else
-    bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle)
+    bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle, 'StrongestFeatures', strongestFeatures);
+    disp(bag)
 end
 
 %% 2. lépés: (train)
@@ -100,6 +114,7 @@ clear bag;
 
 %% opcionális: validálás eredményei
 if validify == true
-    confMatrix = evaluate(categoryClassifier, validateSet)
-    mean(diag(confMatrix))
+    confMatrix = evaluate(categoryClassifier, validateSet);
+    disp(confMatrix)
+    mean(diag(confMatrix));
 end

@@ -21,7 +21,8 @@ function [return_label, return_score] = classifyECOCSVM(img, bagOfWords, classif
 %
 
 if ischar(img) == 1
-    testImgSet = imageSet(img);
+    path = fileparts(img);
+    testImgSet = imageSet(path);
     img = read(testImgSet(1), 1);
 else
     img = read(img(1), 1);
