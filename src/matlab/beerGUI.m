@@ -8,12 +8,16 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 
 %%	Globális változók
 	I = [];
-	featureHandles = [];
 	featureIdx = 1;
+	features = {
+		'SURF', '';
+% 		'SIFT', @extractSIFT
+% 		'DSIFT', @extractDSIFT
+	};
 	trainSet = [];
 	classifier = [];
 	roiHandler = [];
-
+	
 	
 %%	Ablak paraméterei	
 	if (nargin == 0)
@@ -32,10 +36,10 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 	fileMenu = uimenu(window, 'Label', 'Fájl');
 		loadImageMI = uimenu(fileMenu, 'Label', 'Betöltés...', 'Callback', @loadImageCB, 'Accelerator', 'o');
 	featureMenu = uimenu(window, 'Label', 'Feature');
-		featureHandles(1) = uimenu(featureMenu, 'Label', 'SURF (szürke)', 'Callback', {@selectFeatureCB, 1});
-		featureHandles(2) = uimenu(featureMenu, 'Label', 'SIFT (szürke)', 'Callback', {@selectFeatureCB, 2});
-		featureHandles(3) = uimenu(featureMenu, 'Label', 'SIFT (HSV)', 'Callback', {@selectFeatureCB, 3});
-		set(featureHandles(featureIdx), 'Checked', 'on');
+		for i = 1:length(features)			
+			features{i, 3} = uimenu(featureMenu, 'Label', 'SURF (szürke)', 'Callback', {@selectFeatureCB, i});			
+		end
+		set(features{featureIdx, 3}, 'Checked', 'on');
 	learningMenu = uimenu(window, 'Label', 'Ágens');
 		dbPathMI = uimenu(learningMenu, 'Label', 'Adatbázis kijelölése...', 'Callback', @loadTrainDirCB, 'Accelerator', 'd');
 		learnMI = uimenu(learningMenu, 'Label', 'Tanítás', 'Callback', @trainCB);
@@ -57,8 +61,8 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 
 	function selectFeatureCB(source, event, newFeatureIdx)
 		if (newFeatureIdx ~= featureIdx)
-			set(featureHandles(newFeatureIdx), 'Checked', 'on');
-			set(featureHandles(featureIdx), 'Checked', 'off');
+			set(features{newFeatureIdx, 3}, 'Checked', 'on');
+			set(features{featureIdx, 3}, 'Checked', 'off');
 			featureIdx = newFeatureIdx;
 			classifier = [];
 		end
@@ -73,7 +77,7 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 	end
 
 	function trainCB(source, event)
-		classifier = trainSingleSimpleSVM(trainSet, featureIdx, false)
+		classifier = trainSingleSimpleSVM(trainSet, features{featureIdx, 2}, false)
 		fprintf('Modell felepitve.\n');
 	end
 
@@ -97,7 +101,7 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 	
 
 %%	Feature-kinyerõk
-	function [] = extractSIFT()
+	function [] = extractSIFT()		
 	end
 
 
