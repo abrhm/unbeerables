@@ -1,5 +1,5 @@
-function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtractHandle, validify, wordNumber)
-% Tanító, amely a Bag of Visual Words modellt használja
+function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtractHandle, validify, wordNumber, strongestFeatures)
+%% Tanító, amely a Bag of Visual Words modellt használja
 % képekbõl kinyert jellemzõk transzformálására
 % olyan feature vektorrá, ami klasszifikálható SVM-el.
 %
@@ -12,6 +12,8 @@ function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtract
 %       TESZTELÉS CÉLJÁBÓL)
 %   wordNumber - a szótárunkba felírandó szavak száma, és így a kalszterek
 %       száma, meghatározza a vizuális szavak számát (default: 64)
+%   strongestFeatures - a bag of visual words objektum a kinyert legerõsebb
+%       jellemzõk mekkora hányadát használja fel
 %
 % output:
 %   categoryClassifier - betanított ECOC framework-el ellátott SVM
@@ -21,14 +23,14 @@ function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtract
 % Folyamat, paraméterek, illetve megvalósítás részletessége változhat!
 %
 
-% Check input
+%% Check input
 useSURF = false;
 if ~isa(featureExtractHandle, 'function_handle') || isempty(imgSetTrain)
        useSURF = true;
 end
 
 if isempty(imgSetTrain)
-    main_folder = 'D:\matlab_proj\gray';
+    main_folder = 'D:\matlab_proj\manual_testing\2\train';
     imgSetTrain = imageSet(main_folder, 'recursive');
 end
 
@@ -36,18 +38,35 @@ if isempty(wordNumber) || ~isnumeric(wordNumber) == 0
     wordNumber = 64;
 end
 
+if isreal(strongestFeatures)
+    if strongestFeatures < 0
+       strongestFeatures = 0;
+    elseif strongestFeatures > 1
+       strongestFeatures = 1;
+    end
+else
+    error('strongestFeatures should be a float parameter!');
+end
+
 if islogical(validify)
+    if islogical(validify)
+        disp('Validation on training data set to: ')
+        disp(validify)
+    else
+        validify = false;
+        disp('Validation variable set to default = false')
+    end
     if validify == true
-        minSetCount = min([imgSetTrain.Count]);
-        imgSetsPart = partition(imgSetTrain, minSetCount, 'randomize');
+        %minSetCount = min([imgSetTrain.Count]);
+        %imgSetsPart = partition(imgSetTrain, minSetCount, 'randomize');
         %imgSetsPart = partition(imgSetTrain, minSetCount, 'sequential');
-        [imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'randomize');
-        %[imgSetTrain, validateSet] = partition(imgSetTrain, 0.4, 'randomize');
+        validateSet = imageSet('D:\matlab_proj\manual_testing\2\valid','recursive');
+        %[imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'randomize');
         %[imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'sequential');
     end
 end
 
-% Debug information
+%% Debug information
 % Milyen képekre tanul rá
 str = 'imgSetTrain contents: ';
 disp(str)
@@ -62,7 +81,7 @@ for i=1:s(end)
     disp(aa1)
 end
 
-% 1. lépés:
+%% 1. lépés:
 % Bag of visual words létrehozása, ami k-means klaszterezést használ
 % a megfelelõ szeparáláshoz; a klaszterek pedig az egyes visual word-öknek
 % felelnek meg, amibõl hisztogramot állítunk elõ és azt adjuk tovább.
@@ -70,12 +89,14 @@ end
 %   vagy a beépített SURF algoritmussal dolgozó eljárással,
 %   vagy általunk létrehozott feature detektor function-nal történik.
 if useSURF == true
-    bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', wordNumber, 'PointSelection', 'Detector')
+    bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
+    disp(bag)
 else
-    bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle)
+    bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
+    disp(bag)
 end
 
-% 2. lépés: (train)
+%% 2. lépés: (train)
 % Kép klasszifikáló SVM-et hozunk létre
 % az elõzõ lépésben kapott hisztogram egy vektor, amit átadunk az SVM
 % osztályozónak.
@@ -83,16 +104,17 @@ end
 opts = templateSVM('BoxConstraint', 1.3, 'KernelFunction', 'gaussian');
 categoryClassifier = trainImageCategoryClassifier(imgSetTrain, bag, 'LearnerOptions', opts);
 
-% képek törlése memóriából -> a jellemzõket kinyertük, képeket kiértékeltük
+%% képek törlése memóriából -> a jellemzõket kinyertük, képeket kiértékeltük
 % delete(trainingSets)
 clear imgSetTrain;
 clear bag;
 
-% opcionális: modell mentése
+%% opcionális: modell mentése
 % save('classifier_1', 'categoryClassifier')
 
-% opcionális: validálás eredményei
+%% opcionális: validálás eredményei
 if validify == true
-    confMatrix = evaluate(categoryClassifier, validateSet)
-    mean(diag(confMatrix))
+    confMatrix = evaluate(categoryClassifier, validateSet);
+    disp(confMatrix)
+    mean(diag(confMatrix));
 end
