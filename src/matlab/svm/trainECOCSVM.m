@@ -60,11 +60,11 @@ else
 end
 
 if islogical(validify)
-    disp('Validation on training data set to: ')
-    disp(validify)
+    %disp('Validation on training data set to: ')
+    %disp(validify)
 else
     validify = false;
-    disp('Validation variable set to default = false')
+    %disp('Validation variable set to default = false')
 end
 
 if isempty(learnerOpts)
