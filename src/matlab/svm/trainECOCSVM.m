@@ -1,4 +1,4 @@
-function [categoryClassifier, output_bag] = trainECOCSVM(imgSetTrain, featureExtractHandle, validify, wordNumber, strongestFeatures)
+function [categoryClassifier, output_bag, output_msgBag, output_msgTrainer] = trainECOCSVM(imgSetTrain, featureExtractHandle, validify, wordNumber, strongestFeatures, learnerOpts)
 %% Tanító, amely a Bag of Visual Words modellt használja
 % képekbõl kinyert SIFT jellemzõk transzformálására
 % olyan feature vektorrá, ami klasszifikálható SVM-el.
@@ -19,12 +19,16 @@ function [categoryClassifier, output_bag] = trainECOCSVM(imgSetTrain, featureExt
 %       TESZTELÉS CÉLJÁBÓL)
 %   strongestFeatures - a bag of visual words objektum a kinyert legerõsebb
 %       jellemzõk mekkora hányadát használja fel
+%   learnerOpts - SVM osztályozók létrehozásának modelljét beállító
+%       paraméter, valid választásokról lásd a matlab doksit:
+%       https://www.mathworks.com/help/stats/fitcecoc.html#zmw57dd0e233307
 %
 % output:
 %   categoryClassifier - betanított SVM osztályozók egy ECOC
 %       keretrendszerben
 %   output_bag - bag of visual words objektum, szükséges a predikcióhoz
 %       tesztelõ fgv-ben (lásd calssifyECOCSVM.m)
+%   output_msgBag, output_msgTrainer - információk dolgokról
 %
 % NOTE: Work in progress!
 % Folyamat, paraméterek, illetve megvalósítás részletessége változhat!
@@ -63,6 +67,10 @@ else
     disp('Validation variable set to default = false')
 end
 
+if isempty(learnerOpts)
+    learnerOpts = 'onevsone';
+end
+
 %% Labelek kinyerése minden képhez
 label_vector = [imgSetTrain.ImageLocation];
 label_vector{:};
@@ -86,10 +94,10 @@ end
 % általunk létrehozott feature detektor function-tõl kapja az inputot.
 if useSURF == true
     bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
-    disp(bag)
+    output_msgBag = evalc('disp(bag)');
 else
     bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
-    disp(bag)
+    output_msgBag = evalc('disp(bag)');
 end
 
 %% 2. lépés: (train)
@@ -101,13 +109,18 @@ end
 featureMatrix = encode(bag,imgSetTrain);
 % beállítjuk az osztályozót
 opts = templateSVM('BoxConstraint', 1.3, 'KernelFunction', 'gaussian');
-categoryClassifier = fitcecoc(featureMatrix,out_label_vector,'Learners',opts);
+categoryClassifier = fitcecoc(featureMatrix,out_label_vector,'Learners',opts, 'Coding', learnerOpts);
+s = 'Tanitasi modell:';
+s1 = evalc('disp(learnerOpts)');
+msg1 = {strcat(s,s1)};
 
 %% Debug information
 % Információ kiírása a klasszifikálóról
-%categoryClassifier.ClassNames
+s = 'Osztalyok:';
+s1 = evalc('disp(categoryClassifier.ClassNames)');
+msg2 = {strcat(s,s1)};
 
-% 3 bináris tanuló SVM-ek reprezentálása mátrix alakban aszerint, hogy
+% Bináris tanuló SVM-ek reprezentálása mátrix alakban aszerint, hogy
 % melyik a pozitív osztály, és melyik a negatív (sorok: osztályok,
 % oszlopok: bináris tanulók/SVM-ek)
 CodingMtx = categoryClassifier.CodingMatrix;
@@ -118,7 +131,9 @@ if validify == true
     % ezzel a 'resubstitution error'-t fogjuk megkapni
     % ez a hiba a rossz klasszifikációkat tûnteti fel
     isLoss = resubLoss(categoryClassifier);
-    disp(isLoss)
+    s = 'Resubstitution error:';
+    s1 = evalc('disp(isLoss)');
+    msg3 = {strcat(s,s1)};
 
     % cross-validation: 10 részre osztva a tanuló halmazt értékeljük ki
     % a tanulókat
@@ -126,12 +141,16 @@ if validify == true
     % felosztott és kiértékelt modellre kiszámoljuk a veszteséget hibás
     % osztályozásokra
     oosLoss = kfoldLoss(CVcategoryClassifier);
-    disp(oosLoss)
+    s = 'K fold error:';
+    s1 = evalc('disp(oosLoss)');
+    msg4 = {strcat(s,s1)};
     
     % confusion matrix reprezentáció
     oofLoss = kfoldPredict(CVcategoryClassifier);
     confMat = confusionmat(out_label_vector, oofLoss);
-    disp(confMat)
+    s = 'Confusion Matrix:';
+    s1 = evalc('disp(confMat)');
+    msg5 = {strcat(s,s1)};
 end
 
 % Szükséges a predikálásnál
@@ -141,6 +160,12 @@ output_bag = bag;
 % delete(trainingSets)
 clear imgSetTrain;
 clear bag;
+
+if validify == true
+    output_msgTrainer = char(char(msg1),char(msg2),char(msg3),char(msg4),char(msg5));
+else
+    output_msgTrainer = char(char(msg1),char(msg2));
+end
 
 %% opcionális: modell mentése
 % save('classifier_1', 'categoryClassifier')
