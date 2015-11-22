@@ -22,7 +22,9 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 	nVisualWords = 64;
 	trainSet = [];
 	classifier = [];
-% 	isSVMSimple = false;
+	bagOfWords = [];
+	isSVMSimple = false;
+	isValidate = false;
 	
 	
 %%	Ablak paraméterei
@@ -42,17 +44,19 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 %%	Komponensek
 	fileMenu = uimenu(window, 'Label', 'Fájl');
 		loadImageMI = uimenu(fileMenu, 'Label', 'Betöltés...', 'Callback', @loadImageCB, 'Accelerator', 'o');
+		exitMI = uimenu(fileMenu, 'Label', 'Kilépés', 'Callback', 'close');
 	featureMenu = uimenu(window, 'Label', 'Feature');
 		for i = 1:length(features)			
 			features{i, 3} = uimenu(featureMenu, 'Label', features{i, 1}, 'Callback', {@selectFeatureCB, i});			
 		end
-		set(features{featureIdx, 3}, 'Checked', 'on');
+		features{featureIdx, 3}.Checked = 'on';
 		ptStrenMI = uimenu(featureMenu, 'Label', 'Erõküszöb...', 'Callback', @setStrongestFeats, 'Separator', 'on');
 	learningMenu = uimenu(window, 'Label', 'Ágens');
 		dbPathMI = uimenu(learningMenu, 'Label', 'Adatbázis kijelölése...', 'Callback', @loadTrainDirCB, 'Accelerator', 'd');
 		learnMI = uimenu(learningMenu, 'Label', 'Tanítás', 'Callback', @trainCB, 'Accelerator', 't');
 		viswordsMI = uimenu(learningMenu, 'Label', 'Szavak száma...', 'Callback', @setNoOfVisualWords, 'Separator', 'on');
-% 		svmSimpleMI = uimenu(learningMenu, 'Label', 'Egyszerû SVM', 'Callback', @setSVMSimpleSCB);
+		validateMI = uimenu(learningMenu, 'Label', 'Validálás', 'Callback', @setValidateCB);
+		svmSimpleMI = uimenu(learningMenu, 'Label', 'Egyszerû SVM', 'Callback', @setSVMSimpleSCB);		
 	classifyMenu = uimenu(window, 'Label', 'Detektálás');
 		roiMI = uimenu(classifyMenu, 'Label', 'ROI kijelölése...', 'Callback', @selectRoiCB, 'Accelerator', 'r');
 		estimateMI = uimenu(classifyMenu, 'Label', 'Becslés', 'Callback', @classifyCB, 'Accelerator', 'e');
@@ -60,7 +64,7 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 	window.Visible = 'on';
 	
 	
-%%	Callback függvények
+%%	Callback - Fájl
 	function loadImageCB(source, event)
 		[filename, path] = uigetfile({'*.jpg'; '*.png'; '*.tif'; '*.gif'}, 'Kép betöltése');
 		I = imread([path filename]);
@@ -69,6 +73,8 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 % 		fprintf('Kep betoltve: %s%s"\n', path, filename);
 	end
 
+
+%%	Callback - Feature
 	function selectFeatureCB(source, event, newFeatureIdx)
 		if (newFeatureIdx ~= featureIdx)
 			set(features{newFeatureIdx, 3}, 'Checked', 'on');
@@ -101,24 +107,29 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 			end
 		end
 	end
-	
+
+
+%%	Callback - Ágens
 	function loadTrainDirCB(source, event)
 		trainPath = uigetdir('', 'Tanulóadatbázis betöltése');
 		if trainPath ~= 0
 			trainSet = imageSet(trainPath, 'recursive');
 % 			fprintf('Tanulo adatbazis kijelolve: %s\n', trainPath);
-		end		
+		end
 	end
 
 	function trainCB(source, event)
-		classifier = trainSingleSimpleSVM(trainSet, features{featureIdx, 2}, false, nVisualWords, strongestFeatures);
-		msgbox('Modell felepitve.');
+		if isSimpleSVM
+% 			Az egyszerû SVM-el nem validálunk
+			classifier = trainSingleSimpleSVM(trainSet, features{featureIdx, 2}, false, nVisualWords, strongestFeatures);
+		else
+			[classifier, bagOfWords, bowLog, trainLog] = trainECOCSVM(trainSet, features{featureIdx, 2}, isValidate, nVisualWords, strongestFeatures, '');
+			if isValidate
+%				itt majd log exportálása
+			end
+		end
+		msgbox('Modell sikeresen felépítve.');
 % 		fprintf('Modell felepitve.\n');
-	end
-
-	function selectRoiCB(source, event)
-		delete(roiHandler);
-		roiHandler = imrect(imageDisplay);
 	end
 
 	function setNoOfVisualWords(source, event)
@@ -145,9 +156,30 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 		end
 	end
 
-% 	function setSVMSimpleSCB(source, event)
-% 	end
-	
+	function setSVMSimpleSCB(source, event)
+		if isSVMSimple
+			source.Checked = 'off';
+		else
+			source.Checked = 'on';
+		end
+		isSVMSimple = ~isSVMSimple;
+	end
+
+	function setValidateCB(source, event)
+		if isValidate
+			source.Checked = 'off';
+		else
+			source.Checked = 'on';
+		end
+		isValidate = ~isValidate;
+	end
+
+%%	Callback - Detektálás
+	function selectRoiCB(source, event)
+		delete(roiHandler);
+		roiHandler = imrect(imageDisplay);
+	end
+
 	function classifyCB(source, event)
 % 		Ha nem változott meg a kiválasztott feature leíró, akkor osztályozhatunk
 		if ~isempty(classifier)
@@ -160,13 +192,17 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 			else
 				I_roi = I;
 			end
-			[resultScore, resultLabel] = classifySingleSimpleSVM(I_roi, classifier);
-			str = sprintf('Marka: %s\nErtek: %f', resultLabel, resultScore);
-			msgbox(str, 'Eredmeny');
+			if isSVMSimple
+				[resultLabel, resultScore] = classifySingleSimpleSVM(I_roi, classifier);
+			else
+				[resultLabel, resultScore] = classifyECOCSVM(I_roi, bagOfWords, classifier);
+			end
+			str = sprintf('Márka: %s\nÉrték: %f', resultLabel, resultScore);
+			msgbox(str, 'Eredmény');
 % 			fprintf('Osztaly: %s\nErtekeles: %f', resultLabel, resultScore);
-% 			figure, imshow(I_roi);
+% 			roiWindow = imshow(I_roi);
 		else
-			errordlg('A modell elavult, frissites szukseges.');
+			errordlg('A modell elavult, frissités szükséges. Tanítson újra!');
 % 			fprintf('Modell elavult: frissites szukseges.\n');
 		end
 	end
