@@ -1,4 +1,4 @@
-function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtractHandle, validify, wordNumber, strongestFeatures)
+function [categoryClassifier,output_msgBag, output_msgTrainer] = trainSingleSimpleSVM(imgSetTrain, featureExtractHandle, validify, wordNumber, strongestFeatures)
 %% Tanító, amely a Bag of Visual Words modellt használja
 % képekbõl kinyert jellemzõk transzformálására
 % olyan feature vektorrá, ami klasszifikálható SVM-el.
@@ -18,6 +18,7 @@ function [categoryClassifier] = trainSingleSimpleSVM(imgSetTrain, featureExtract
 % output:
 %   categoryClassifier - betanított ECOC framework-el ellátott SVM
 %       osztályozó
+%   output_msgBag, output_msgTrainer - információk dolgokról
 %
 % NOTE: Work in progress!
 % Folyamat, paraméterek, illetve megvalósítás részletessége változhat!
@@ -58,28 +59,28 @@ if islogical(validify)
     end
     if validify == true
         %minSetCount = min([imgSetTrain.Count]);
-        %imgSetsPart = partition(imgSetTrain, minSetCount, 'randomize');
+        imgSetsPart = partition(imgSetTrain, minSetCount, 'randomize');
         %imgSetsPart = partition(imgSetTrain, minSetCount, 'sequential');
-        validateSet = imageSet('D:\matlab_proj\manual_testing\2\valid','recursive');
-        %[imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'randomize');
+        %validateSet = imageSet('D:\matlab_proj\manual_testing\2\valid','recursive');
+        [imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'randomize');
         %[imgSetTrain, validateSet] = partition(imgSetsPart, 0.4, 'sequential');
     end
 end
 
 %% Debug information
 % Milyen képekre tanul rá
-str = 'imgSetTrain contents: ';
-disp(str)
-dbg = [imgSetTrain.ImageLocation];
-dbg{:};
-s = size(dbg);
-for i=1:s(end)
-	a = dbg(i);
-	aa = regexp(a,'\','split');
-	aa1 = aa{:};
-	aa1 = aa1(end);
-    disp(aa1)
-end
+%str = 'imgSetTrain contents: ';
+%disp(str)
+%dbg = [imgSetTrain.ImageLocation];
+%dbg{:};
+%s = size(dbg);
+%for i=1:s(end)
+%	a = dbg(i);
+%	aa = regexp(a,'\','split');
+%	aa1 = aa{:};
+%	aa1 = aa1(end);
+%    disp(aa1)
+%end
 
 %% 1. lépés:
 % Bag of visual words létrehozása, ami k-means klaszterezést használ
@@ -90,10 +91,10 @@ end
 %   vagy általunk létrehozott feature detektor function-nal történik.
 if useSURF == true
     bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
-    disp(bag)
+    output_msgBag = evalc('disp(bag)');
 else
     bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
-    disp(bag)
+    output_msgBag = evalc('disp(bag)');
 end
 
 %% 2. lépés: (train)
@@ -103,6 +104,7 @@ end
 % TODO: templateSVM-et be kell lõni
 opts = templateSVM('BoxConstraint', 1.3, 'KernelFunction', 'gaussian');
 categoryClassifier = trainImageCategoryClassifier(imgSetTrain, bag, 'LearnerOptions', opts);
+msg1 = 'Tanitasi modell: one-vs-one egyszeru tanitoval';
 
 %% képek törlése memóriából -> a jellemzõket kinyertük, képeket kiértékeltük
 % delete(trainingSets)
@@ -115,6 +117,16 @@ clear bag;
 %% opcionális: validálás eredményei
 if validify == true
     confMatrix = evaluate(categoryClassifier, validateSet);
-    disp(confMatrix)
-    mean(diag(confMatrix));
+    s = 'Confusion Matrix:';
+    s1 = evalc('disp(confMatrix)');
+    msg2 = {strcat(s,s1)};
+    %mean(diag(confMatrix));
+end
+
+if validify == true
+    output_msgTrainer = char(char(msg1),char(msg2));
+else
+    output_msgTrainer = char(char(msg1));
+end
+
 end
