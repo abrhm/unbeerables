@@ -119,7 +119,7 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 	end
 
 	function trainCB(source, event)
-		if isSimpleSVM
+		if isSVMSimple
 % 			Az egyszerû SVM-el nem validálunk
 			classifier = trainSingleSimpleSVM(trainSet, features{featureIdx, 2}, false, nVisualWords, strongestFeatures);
 		else
@@ -197,7 +197,7 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 			else
 				[resultLabel, resultScore] = classifyECOCSVM(I_roi, bagOfWords, classifier);
 			end
-			str = sprintf('Márka: %s\nÉrték: %f', resultLabel, resultScore);
+			str = sprintf('Márka: %s\nÉrték: %f', cell2mat(resultLabel), resultScore);
 			msgbox(str, 'Eredmény');
 % 			fprintf('Osztaly: %s\nErtekeles: %f', resultLabel, resultScore);
 % 			roiWindow = imshow(I_roi);
