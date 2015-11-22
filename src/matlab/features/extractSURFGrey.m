@@ -3,6 +3,9 @@ function [features, featureMetrics] = extractSURFGrey(I)
 %	kép szürkeárnyalatosra konvertált változatán.
 
 %%	Elõfeldolgozás
+	if (3 <	size(I, 3))
+		I = I(:,:,1:3);
+	end
 	Igrey = single(rgb2gray(I));
 	maxI = max(Igrey(:));
 	Igrey = (Igrey ./ maxI) .* 255.0;
@@ -14,7 +17,7 @@ function [features, featureMetrics] = extractSURFGrey(I)
 	featureMetrics = validPoints.Scale;
 
 %%	Debug info
-	fprintf('%d detektalt feature\n', size(features, 1));
+% 	fprintf('%d detektalt feature\n', size(features, 1));
 	
 %%	Megjelenítés
 % 	imshow(Igrey, []);

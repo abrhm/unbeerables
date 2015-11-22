@@ -3,17 +3,22 @@ function [features, featureMetrics] = extractSIFTHue(I)
 %	kép HSV-re konvertált változatának hue csatornáján.
 
 %%	Elõfeldolgozás
+	if (3 <	size(I, 3))
+		I = I(:,:,1:3);
+	end
 	Ihsv = single(rgb2hsv(I));
 	Ihue = Ihsv(:,:,1);
 	maxI = max(Ihue(:));
 	Ihue = (Ihue ./ maxI) .* 255.0;
 
 %%	Feature kinyerés
-	[points, features] = vl_sift(Ihue);
-	featureMetrics = points(3,:);
+	[points, features] = vl_sift(Igrey);
+	points = points';
+	features = features';
+	featureMetrics = points(:,3);
 
 %%	Debug info
-	fprintf('%d detektalt feature\n', size(features, 1));
+% 	fprintf('%d detektalt feature\n', size(features, 1));
 	
 %%	Megjelenítés
 % 	centers = points(:,3);

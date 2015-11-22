@@ -1,5 +1,5 @@
-function [features, featureMetrics] = extractSIFTGrey(I)
-%	EXTRACTSIFTGREY	Feature kinyerést végez a SIFT módszerrel a megadott
+function [features, featureMetrics] = extractDSIFTGrey(I)
+%	EXTRACTDSIFTGREY Feature kinyerést végez a DSIFT módszerrel a megadott 
 %	kép szürkeárnyalatos változatán.
 
 %%	Elõfeldolgozás
@@ -11,10 +11,12 @@ function [features, featureMetrics] = extractSIFTGrey(I)
 	Igrey = (Igrey ./ maxI) .* 255.0;
 	
 %%	Feature kinyerés
-	[points, features] = vl_sift(Igrey);
+	dsiftSteps = 5;
+	[points, features] = vl_dsift(Igrey, 'step', dsiftSteps, 'FloatDescriptors', 'Fast');
 	points = points';
 	features = features';
-	featureMetrics = points(:,3);
+% 	featureMetrics = points(:,3);
+	featureMetrics = repmat(1.0, size(points, 1), 1);
 	
 %%	Debug info
 % 	fprintf('%d detektalt feature\n', size(features, 1));

@@ -13,18 +13,19 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 	features = {
 		'SURF (szürke)',	@extractSURFGrey;
 		'SIFT (szürke)',	@extractSIFTGrey;
-		'SIFT (hue)',		@extractSIFTHue
+		'SIFT (hue)',		@extractSIFTHue;
 		'DSIFT (szürke)',	@extractDSIFTGrey
 	};
 	strongestFeatures = 0.8;
-	roiHandler = [];	
+% 	dsiftSteps = 5;
+	roiHandler = [];
 	nVisualWords = 64;
 	trainSet = [];
 	classifier = [];
 % 	isSVMSimple = false;
 	
 	
-%%	Ablak paraméterei	
+%%	Ablak paraméterei
 	if (nargin == 0)
 		windowHeight = 480;
 		windowWidth = 640;
@@ -34,7 +35,7 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 	screenDim = get(groot, 'ScreenSize');
 	windowBottomMargin = screenDim(4) - (windowTopMargin + windowHeight);
 	window = figure('Position', [windowLeftMargin, windowBottomMargin, windowWidth, windowHeight], ...
-		'MenuBar', 'none', 'Visible', 'off', 'Name', 'Logófelismerés', 'NumberTitle', 'off');
+		'MenuBar', 'none', 'Visible', 'off', 'Name', 'Logófelismerés', 'NumberTitle', 'off', 'DockControls', 'off');
 	movegui(window, 'center');
 	
 	
@@ -43,7 +44,7 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 		loadImageMI = uimenu(fileMenu, 'Label', 'Betöltés...', 'Callback', @loadImageCB, 'Accelerator', 'o');
 	featureMenu = uimenu(window, 'Label', 'Feature');
 		for i = 1:length(features)			
-			features{i, 3} = uimenu(featureMenu, 'Label', 'SURF (szürke)', 'Callback', {@selectFeatureCB, i});			
+			features{i, 3} = uimenu(featureMenu, 'Label', features{i, 1}, 'Callback', {@selectFeatureCB, i});			
 		end
 		set(features{featureIdx, 3}, 'Checked', 'on');
 		ptStrenMI = uimenu(featureMenu, 'Label', 'Erõküszöb...', 'Callback', @setStrongestFeats, 'Separator', 'on');
@@ -65,7 +66,7 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 		I = imread([path filename]);
 		axes(imageDisplay);
 		imshow(I, 'InitialMagnification', 'fit');
-		fprintf('Kep betoltve: %s%s"\n', path, filename);
+% 		fprintf('Kep betoltve: %s%s"\n', path, filename);
 	end
 
 	function selectFeatureCB(source, event, newFeatureIdx)
@@ -104,8 +105,8 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 	function loadTrainDirCB(source, event)
 		trainPath = uigetdir('', 'Tanulóadatbázis betöltése');
 		if trainPath ~= 0
-			trainSet = imageSet(trainPath);
-			fprintf('Tanulo adatbazis kijelolve: %s\n', trainPath);
+			trainSet = imageSet(trainPath, 'recursive');
+% 			fprintf('Tanulo adatbazis kijelolve: %s\n', trainPath);
 		end		
 	end
 
@@ -160,8 +161,8 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 				I_roi = I;
 			end
 			[resultScore, resultLabel] = classifySingleSimpleSVM(I_roi, classifier);
-			str = sprintf('Osztaly: %s\nErtekeles: %f', resultLabel, resultScore);
-			msgbox(str);
+			str = sprintf('Marka: %s\nErtek: %f', resultLabel, resultScore);
+			msgbox(str, 'Eredmeny');
 % 			fprintf('Osztaly: %s\nErtekeles: %f', resultLabel, resultScore);
 % 			figure, imshow(I_roi);
 		else
