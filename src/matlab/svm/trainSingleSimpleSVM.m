@@ -58,7 +58,7 @@ if islogical(validify)
         disp('Validation variable set to default = false')
     end
     if validify == true
-        %minSetCount = min([imgSetTrain.Count]);
+        minSetCount = min([imgSetTrain.Count]);
         imgSetsPart = partition(imgSetTrain, minSetCount, 'randomize');
         %imgSetsPart = partition(imgSetTrain, minSetCount, 'sequential');
         %validateSet = imageSet('D:\matlab_proj\manual_testing\2\valid','recursive');
@@ -117,9 +117,16 @@ clear bag;
 %% opcionális: validálás eredményei
 if validify == true
     confMatrix = evaluate(categoryClassifier, validateSet);
-    s = 'Confusion Matrix:';
+    s = sprintf('%s\n', 'Confusion Matrix:');
     s1 = evalc('disp(confMatrix)');
-    msg2 = {strcat(s,s1)};
+    
+    %s1_num = diag(confMatrix);
+    %ss = cellstr(s);
+    %xlsFilename = 'testdata.xlsx';
+    %msg = {ss; s1_num};
+    %xlswrite(xlsFilename, msg)
+    
+    msg2 = sprintf('%s%s',s ,s1);
     %mean(diag(confMatrix));
 end
 

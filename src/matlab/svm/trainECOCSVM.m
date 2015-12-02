@@ -110,15 +110,15 @@ featureMatrix = encode(bag,imgSetTrain);
 % beállítjuk az osztályozót
 opts = templateSVM('BoxConstraint', 1.3, 'KernelFunction', 'gaussian');
 categoryClassifier = fitcecoc(featureMatrix,out_label_vector,'Learners',opts, 'Coding', learnerOpts);
-s = 'Tanitasi modell:';
+s = sprintf('%s\n', 'Tanitasi modell:');
 s1 = evalc('disp(learnerOpts)');
-msg1 = {strcat(s,s1)};
+msg1 = sprintf('%s%s',s ,s1);
 
 %% Debug information
 % Információ kiírása a klasszifikálóról
-s = 'Osztalyok:';
+s = sprintf('%s\n', 'Osztalyok:');
 s1 = evalc('disp(categoryClassifier.ClassNames)');
-msg2 = {strcat(s,s1)};
+msg2 = sprintf('%s%s',s ,s1);
 
 % Bináris tanuló SVM-ek reprezentálása mátrix alakban aszerint, hogy
 % melyik a pozitív osztály, és melyik a negatív (sorok: osztályok,
@@ -131,7 +131,7 @@ if validify == true
     % ezzel a 'resubstitution error'-t fogjuk megkapni
     % ez a hiba a rossz klasszifikációkat tûnteti fel
     isLoss = resubLoss(categoryClassifier);
-    s = 'Resubstitution error:';
+    s = 'Resubstitution error: ';
     s1 = evalc('disp(isLoss)');
     msg3 = {strcat(s,s1)};
 
@@ -141,16 +141,16 @@ if validify == true
     % felosztott és kiértékelt modellre kiszámoljuk a veszteséget hibás
     % osztályozásokra
     oosLoss = kfoldLoss(CVcategoryClassifier);
-    s = 'K fold error:';
+    s = 'K fold error: ';
     s1 = evalc('disp(oosLoss)');
     msg4 = {strcat(s,s1)};
     
     % confusion matrix reprezentáció
     oofLoss = kfoldPredict(CVcategoryClassifier);
-    confMat = confusionmat(out_label_vector, oofLoss);
-    s = 'Confusion Matrix:';
-    s1 = evalc('disp(confMat)');
-    msg5 = {strcat(s,s1)};
+    confMtx = confusionmat(out_label_vector, oofLoss);
+    s = sprintf('%s\n', 'Confusion Matrix:');
+    s1 = evalc('disp(confMtx)');
+    msg5 = sprintf('%s%s',s ,s1);
 end
 
 % Szükséges a predikálásnál
