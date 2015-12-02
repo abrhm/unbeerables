@@ -15,7 +15,6 @@ function [features, featureMetrics] = extractDSIFTGrey(I)
 	[points, features] = vl_dsift(Igrey, 'step', dsiftSteps, 'FloatDescriptors', 'Fast');
 	points = points';
 	features = features';
-% 	featureMetrics = points(:,3);
 	featureMetrics = repmat(1.0, size(points, 1), 1);
 	
 %%	Debug info

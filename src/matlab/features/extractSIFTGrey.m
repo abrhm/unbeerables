@@ -13,7 +13,7 @@ function [features, featureMetrics] = extractSIFTGrey(I)
 %%	Feature kinyerés
 	[points, features] = vl_sift(Igrey);
 	points = points';
-	features = features';
+	features = double(features');
 	featureMetrics = points(:,3);
 	
 %%	Debug info

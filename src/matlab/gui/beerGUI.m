@@ -125,7 +125,8 @@ function [] = beerGUI(windowHeight, windowWidth, windowLeftMargin, windowTopMarg
 		else
 			[classifier, bagOfWords, bowLog, trainLog] = trainECOCSVM(trainSet, features{featureIdx, 2}, isValidate, nVisualWords, strongestFeatures, '');
 			if isValidate
-%				itt majd log exportálása
+				bowLog
+				trainLog
 			end
 		end
 		msgbox('Modell sikeresen felépítve.');

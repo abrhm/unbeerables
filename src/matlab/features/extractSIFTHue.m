@@ -12,9 +12,9 @@ function [features, featureMetrics] = extractSIFTHue(I)
 	Ihue = (Ihue ./ maxI) .* 255.0;
 
 %%	Feature kinyerés
-	[points, features] = vl_sift(Igrey);
+	[points, features] = vl_sift(Ihue);
 	points = points';
-	features = features';
+	features = double(features');
 	featureMetrics = points(:,3);
 
 %%	Debug info
