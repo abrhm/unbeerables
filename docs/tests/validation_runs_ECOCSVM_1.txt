@@ -1,0 +1,244 @@
+Testing different classification models for SVM construction in ECOC framework
+Using trainECOCSVM function:
+	new input parameter called learnerOpts is a string, which is used to signal what
+	kind of coding design we use for the creation and training of SVM binary classifiers
+	all options are listed in https://www.mathworks.com/help/stats/fitcecoc.html#zmw57dd0e233307
+	these designs are K-by-L sized matrices signaling what classes are positive and negative
+	in a classification and how many of these learners should be
+	
+- Using default 'onevsone' multiclass (number of binary learners: K(K – 1)/2):
+
+#1:
+
+resubLoss:
+    0.1573
+
+kfoldLoss:
+    0.4494
+
+Confusion Matrix:
+    14     3     1     1     0
+     0    15     1     1     2
+     2     6     3     2     3
+     0     5     0    12     2
+     0     4     3     4     5
+
+#2:
+
+Resubstitution error:
+    0.1685
+
+K fold error:
+    0.3933
+
+Confusion Matrix:
+    14     4     0     1     0
+     0    15     1     2     1
+     2     6     5     0     3
+     0     5     0    13     1
+     0     6     2     1     7
+
+#3:
+
+Resubstitution error:
+    0.1461
+
+K fold error:
+    0.4382
+
+Confusion Matrix:
+    13     2     2     2     0
+     0    16     1     1     1
+     3     5     3     2     3
+     0     5     0    13     1
+     1     4     3     3     5
+
+#4:
+
+Resubstitution error:
+    0.1236
+
+K fold error:
+    0.4157
+
+Confusion Matrix:
+    14     4     0     1     0
+     0    16     0     2     1
+     2     6     5     1     2
+     0     6     0    12     1
+     0     4     4     3     5
+
+#5:
+
+Resubstitution error:
+    0.1910
+
+K fold error:
+    0.4494
+
+Confusion Matrix:
+    14     4     0     1     0
+     0    13     0     5     1
+     2     5     6     1     2
+     0     7     0    11     1
+     0     6     2     3     5
+	 
+//------------------
+
+- Using 'binary complete' multiclass (number of binary learners: (2^(K−1))−1):
+
+#1:
+
+resubLoss:
+    0.0899
+
+kfoldLoss:
+    0.3483
+
+Confusion Matrix:
+    16     1     1     1     0
+     1    14     0     4     0
+     4     3     6     1     2
+     0     4     0    14     1
+     0     4     2     2     8
+	 
+#2:
+
+Resubstitution error:
+    0.1348
+
+K fold error:
+    0.4270
+
+Confusion Matrix:
+    16     2     0     1     0
+     1    12     2     2     2
+     3     5     4     2     2
+     0     6     0    11     2
+     0     3     1     4     8
+
+#3:
+	 
+Resubstitution error:
+    0.1011
+
+K fold error:
+    0.3933
+
+Confusion Matrix:
+    16     3     0     0     0
+     1    14     1     2     1
+     3     3     4     3     3
+     0     4     0    12     3
+     1     2     2     3     8
+	 
+#4:
+
+Resubstitution error:
+    0.0899
+
+K fold error:
+    0.4382
+
+Confusion Matrix:
+    16     2     0     1     0
+     1    11     1     5     1
+     3     4     3     2     4
+     0     3     0    12     4
+     1     2     2     3     8
+	 
+#5:
+
+Resubstitution error:
+    0.1011
+
+K fold error:
+    0.3483
+
+Confusion Matrix:
+    16     2     0     1     0
+     1    12     1     4     1
+     3     3     8     0     2
+     0     4     0    14     1
+     1     3     4     0     8
+	 
+//------------------
+	
+- Using 'onevsall' multiclass (number of binary learners: K):
+
+#1:
+
+Resubstitution error:
+    0.0562
+
+K fold error:
+    0.3820
+
+Confusion Matrix:
+    16     1     1     1     0
+     2    13     0     3     1
+     3     3     7     1     2
+     0     2     0    15     2
+     2     2     3     5     4
+
+#2:
+
+Resubstitution error:
+    0.0562
+
+K fold error:
+    0.3483
+
+Confusion Matrix:
+    16     1     1     1     0
+     2    13     1     2     1
+     3     2     8     0     3
+     1     1     0    16     1
+     2     2     4     3     5
+
+#3:
+
+Resubstitution error:
+    0.0562
+
+K fold error:
+    0.4382
+
+Confusion Matrix:
+    16     1     0     2     0
+     2    10     2     4     1
+     6     2     6     0     2
+     2     3     0    12     2
+     2     2     4     2     6
+
+#4:
+
+Resubstitution error:
+    0.0449
+
+K fold error:
+    0.4270
+
+Confusion Matrix:
+    16     1     0     1     1
+     2     9     3     2     3
+     7     3     3     1     2
+     0     1     0    15     3
+     1     0     4     3     8
+
+#5:
+
+Resubstitution error:
+    0.0562
+
+K fold error:
+    0.3820
+
+Confusion Matrix:
+    16     2     0     0     1
+     1    11     1     3     3
+     5     2     6     1     2
+     1     1     0    15     2
+     1     1     5     2     7
+
+//------------------
