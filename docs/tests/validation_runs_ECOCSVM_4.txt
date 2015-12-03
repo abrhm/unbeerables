@@ -1,0 +1,190 @@
+Testing for different word count, using cross-validation on existing database (gray images).
+Tests so far have been conducted with 64 words in our Bag of Visual Words object.
+Database and SVM options remain constant during these validation tests.
+
+- Specifiying constant values: one-vs-one SVM builder, cross-validation with 10 subsets, 5 classes
+
+using SIFT(gray), 10 tests each feature extractor
+rows: original labels - columns: predicted labels
+progression of labels in matrices (from left to right and top to bottom):
+                                                                                                                                                    
+Osztalyok:
+	'guinness'
+    'heineken'
+    'kobanyai'
+    'stella'
+    'tuborg'   
+
+//-----------------------------------
+
+30 words
+
+Resubstitution error:    0.1848                                                                                                                                               
+K fold error:    0.5109                                                                                                                                                       
+Confusion Matrix:
+     8     3     2     6     0
+     0    11     1     5     2
+     2     0     5     6     3
+     0     2     0    15     2
+     0     4     3     6     6
+
+Resubstitution error:    0.1848                                                                                                                                               
+K fold error:    0.5543                                                                                                                                                       
+Confusion Matrix:
+     6     4     2     7     0
+     3     9     0     5     2
+     1     1     3     8     3
+     0     2     0    17     0
+     0     4     2     7     6
+
+Resubstitution error:    0.2065                                                                                                                                               
+K fold error:    0.5543                                                                                                                                                       
+Confusion Matrix:
+     7     5     1     6     0
+     1    11     0     5     2
+     1     1     3     6     5
+     0     3     0    15     1
+     2     2     4     6     5
+	 
+Resubstitution error:    0.2247                                                                                                                                               
+K fold error:    0.5169                                                                                                                                                       
+Confusion Matrix:
+     7     5     1     5     1
+     1    11     0     5     2
+     2     2     6     4     2
+     0     3     0    15     1
+     1     2     3     6     4
+	 
+Resubstitution error:    0.2247                                                                                                                                               
+K fold error:    0.5618                                                                                                                                                       
+Confusion Matrix:
+     7     4     2     6     0
+     2     8     2     6     1
+     1     0     4     6     5
+     0     3     0    16     0
+     1     2     4     5     4
+	 
+Resubstitution error:    0.2247                                                                                                                                               
+K fold error:    0.5056                                                                                                                                                       
+Confusion Matrix:
+     7     3     2     7     0
+     2    10     1     4     2
+     1     2     7     5     1
+     0     3     0    16     0
+     1     2     2     7     4
+	 
+//-----------------------------------
+
+50 words
+
+Resubstitution error:    0.2247                                                                                                                                               
+K fold error:    0.5393                                                                                                                                                       
+Confusion Matrix:
+     9     3     1     6     0
+     1    11     1     5     1
+     2     0     3     8     3
+     0     4     1    14     0
+     2     1     3     6     4
+	 
+Resubstitution error:    0.2360                                                                                                                                               
+K fold error:    0.5506                                                                                                                                                       
+Confusion Matrix:
+     6     4     2     7     0
+     1    10     1     5     2
+     3     1     4     5     3
+     0     3     0    15     1
+     1     2     3     5     5
+	
+Resubstitution error:    0.2247                                                                                                                                               
+K fold error:    0.5506                                                                                                                                                       
+Confusion Matrix:
+     7     3     3     5     1
+     1     9     1     6     2
+     2     0     6     7     1
+     0     3     0    15     1
+     0     3     1     9     3
+	 
+Resubstitution error:    0.2022                                                                                                                                               
+K fold error:    0.5169                                                                                                                                                       
+Confusion Matrix:
+     8     3     3     5     0
+     0    10     3     6     0
+     0     2     6     4     4
+     0     3     1    14     1
+     1     2     3     5     5
+	 
+Resubstitution error:    0.2472                                                                                                                                               
+K fold error:    0.5281                                                                                                                                                       
+Confusion Matrix:
+     7     4     1     7     0
+     1    11     1     5     1
+     1     1     5     7     2
+     0     3     0    15     1
+     1     2     2     7     4
+	 
+Resubstitution error:    0.2247                                                                                                                                               
+K fold error:    0.5618                                                                                                                                                       
+Confusion Matrix:
+     7     3     1     8     0
+     1    11     2     5     0
+     2     1     3     7     3
+     0     2     0    16     1
+     0     2     5     7     2
+	 
+//-----------------------------------
+
+70 words
+
+Resubstitution error:    0.2247                                                                                                                                               
+K fold error:    0.5393                                                                                                                                                       
+Confusion Matrix:
+     8     4     2     5     0
+     1    10     1     6     1
+     2     1     6     5     2
+     0     3     0    14     2
+     1     3     4     5     3
+	 
+Resubstitution error:    0.2247                                                                                                                                               
+K fold error:    0.5506                                                                                                                                                       
+Confusion Matrix:
+     7     4     2     6     0
+     3    10     0     4     2
+     3     0     4     6     3
+     1     3     0    15     0
+     0     3     3     6     4
+	 
+Resubstitution error:    0.2247                                                                                                                                               
+K fold error:    0.5618                                                                                                                                                       
+Confusion Matrix:
+     8     4     1     6     0
+     2     9     1     5     2
+     2     1     5     6     2
+     0     3     0    14     2
+     0     3     1     9     3
+	 
+Resubstitution error:    0.2135                                                                                                                                               
+K fold error:    0.4607                                                                                                                                                       
+Confusion Matrix:
+    10     3     1     5     0
+     0    12     2     4     1
+     1     2     8     4     1
+     0     3     0    14     2
+     0     3     2     7     4
+	 
+Resubstitution error:    0.2247                                                                                                                                               
+K fold error:    0.5506                                                                                                                                                       
+Confusion Matrix:
+     6     4     3     6     0
+     1     9     0     8     1
+     2     0     6     7     1
+     0     3     0    15     1
+     1     2     4     5     4
+	 
+Resubstitution error:    0.2697                                                                                                                                               
+K fold error:    0.5618                                                                                                                                                       
+Confusion Matrix:
+     6     5     2     6     0
+     1     8     1     7     2
+     2     0     6     7     1
+     0     3     0    15     1
+     1     2     3     6     4
