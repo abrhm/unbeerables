@@ -96,7 +96,7 @@ if useSURF == true
     bag = bagOfFeatures(imgSetTrain, 'Verbose', false, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
     output_msgBag = evalc('disp(bag)');
 else
-    bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle, 'VocabularySize', wordNumber, 'PointSelection', 'Detector', 'StrongestFeatures', strongestFeatures);
+    bag = bagOfFeatures(imgSetTrain,'CustomExtractor', featureExtractHandle, 'Verbose', false, 'VocabularySize', wordNumber, 'StrongestFeatures', strongestFeatures);
     output_msgBag = evalc('disp(bag)');
 end
 
