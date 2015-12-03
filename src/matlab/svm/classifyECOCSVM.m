@@ -24,8 +24,8 @@ if ischar(img) == 1
     path = fileparts(img);
     testImgSet = imageSet(path);
     img = read(testImgSet(1), 1);
-else
-    img = read(img(1), 1);
+elseif isa(imageSet, 'img')
+    img = read(img(1), 1);    
 end
 
 if isa(bagOfWords, 'bagOfFeatures')
